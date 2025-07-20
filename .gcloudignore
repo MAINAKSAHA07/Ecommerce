@@ -1,0 +1,5 @@
+echo "node_modules/" > .gcloudignore
+echo ".git/" >> .gcloudignore
+echo ".env*" >> .gcloudignore
+echo "*.log" >> .gcloudignore
+echo ".DS_Store" >> .gcloudignore

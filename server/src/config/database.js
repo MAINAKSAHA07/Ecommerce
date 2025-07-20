@@ -16,4 +16,35 @@ const sequelize = new Sequelize(process.env.DATABASE_URL || {
   }
 });
 
-module.exports = { sequelize };
+// For Sequelize CLI
+module.exports = {
+  development: {
+    host: '34.63.40.75',
+    port: 5432,
+    database: 'ecommerce_db',
+    username: 'ecommerce_user',
+    password: '8779700241',
+    dialect: 'postgres',
+    logging: console.log
+  },
+  test: {
+    host: '34.63.40.75',
+    port: 5432,
+    database: 'ecommerce_db',
+    username: 'ecommerce_user',
+    password: '8779700241',
+    dialect: 'postgres',
+    logging: false
+  },
+  production: {
+    host: '34.63.40.75',
+    port: 5432,
+    database: 'ecommerce_db',
+    username: 'ecommerce_user',
+    password: '8779700241',
+    dialect: 'postgres',
+    logging: false
+  }
+};
+
+module.exports.sequelize = sequelize;

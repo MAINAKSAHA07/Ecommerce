@@ -96,22 +96,27 @@ const PORT = process.env.PORT || 5000;
 // Database connection and server startup
 const startServer = async () => {
   try {
-    // Test database connection
-    await sequelize.authenticate();
-    console.log('✅ Database connected successfully');
-
-    // Sync database models (in development)
-    if (process.env.NODE_ENV === 'development') {
-      await sequelize.sync({ alter: true });
-      console.log('✅ Database models synchronized');
-    }
-
-    // Start server
-    app.listen(PORT, () => {
+    // Start server first (don't wait for database)
+    const server = app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
       console.log(`🏥 Health Check: http://localhost:${PORT}/health`);
     });
+
+    // Try to connect to database (but don't fail if it doesn't work)
+    try {
+      await sequelize.authenticate();
+      console.log('✅ Database connected successfully');
+
+      // Sync database models (in development)
+      if (process.env.NODE_ENV === 'development') {
+        await sequelize.sync({ alter: true });
+        console.log('✅ Database models synchronized');
+      }
+    } catch (dbError) {
+      console.warn('⚠️ Database connection failed, but server is running:', dbError.message);
+    }
+
   } catch (error) {
     console.error('❌ Failed to start server:', error);
     process.exit(1);

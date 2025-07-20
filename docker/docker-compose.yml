@@ -10,13 +10,18 @@ services:
       POSTGRES_USER: ecommerce_user
       POSTGRES_PASSWORD: ecommerce_password
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - ecommerce_network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ecommerce_user -d ecommerce_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Redis for caching and sessions
   redis:
@@ -56,14 +61,16 @@ services:
       RATE_LIMIT_WINDOW_MS: 900000
       RATE_LIMIT_MAX_REQUESTS: 100
     ports:
-      - "5000:5000"
+      - "5001:5000"
     volumes:
       - ../server:/app
       - /app/node_modules
       - ./gcp-key.json:/app/gcp-key.json:ro
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     networks:
       - ecommerce_network
     restart: unless-stopped
@@ -75,7 +82,7 @@ services:
       dockerfile: ../docker/Dockerfile.client
     container_name: ecommerce_client
     environment:
-      REACT_APP_API_URL: http://localhost:5000/api
+      REACT_APP_API_URL: http://localhost:5001/api
       REACT_APP_ENVIRONMENT: production
     ports:
       - "3000:3000"

@@ -16,7 +16,7 @@ User.hasMany(Order, { foreignKey: 'sellerId', as: 'sellerOrders' });
 User.hasOne(Cart, { foreignKey: 'userId', as: 'cart' });
 User.hasMany(Review, { foreignKey: 'userId', as: 'reviews' });
 User.hasMany(Wishlist, { foreignKey: 'userId', as: 'wishlist' });
-User.hasMany(Payment, { foreignKey: 'orderId', through: Order, as: 'payments' });
+// User has payments through orders (no direct association needed)
 User.hasMany(Review, { foreignKey: 'moderatedBy', as: 'moderatedReviews' });
 
 // Category Associations

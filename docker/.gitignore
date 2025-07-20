@@ -1,0 +1,42 @@
+# Docker specific ignores
+
+# Docker volumes data
+postgres_data/
+redis_data/
+uploads/
+
+# Docker override files
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Environment files
+.env
+.env.local
+.env.docker
+
+# SSL certificates
+ssl/
+*.pem
+*.key
+*.crt
+
+# Logs
+logs/
+*.log
+
+# Backup files
+backups/
+*.backup
+
+# Temporary files
+tmp/
+temp/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
