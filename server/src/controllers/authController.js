@@ -211,11 +211,75 @@ const resetPassword = async (req, res) => {
   }
 };
 
+// Admin Login
+const adminLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find user by email
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password'
+      });
+    }
+
+    // Check if user is active
+    if (!user.isActive) {
+      return res.status(401).json({
+        success: false,
+        message: 'Account is deactivated'
+      });
+    }
+
+    // Check if user is admin
+    if (user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied: Not an admin user'
+      });
+    }
+
+    // Verify password
+    const isValidPassword = await user.validatePassword(password);
+    if (!isValidPassword) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password'
+      });
+    }
+
+    // Update last login
+    await user.update({ lastLoginAt: new Date() });
+
+    // Generate token
+    const token = generateToken(user);
+
+    res.json({
+      success: true,
+      data: {
+        user: user.toJSON(),
+        token
+      },
+      message: 'Admin login successful'
+    });
+  } catch (error) {
+    console.error('Admin login error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Admin login failed',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
   getCurrentUser,
   logout,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  adminLogin,
 }; 
